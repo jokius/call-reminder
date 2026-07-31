@@ -19,7 +19,6 @@ final class AlertPresenter {
     /// `false` — окно уже занято другой встречей и эту мы не показали.
     /// Врать тут нельзя: движок по `true` помечает встречу обработанной,
     /// и тихое «показал» означает потерянное напоминание о втором созвоне.
-    @discardableResult
     func show(
         _ meeting: Meeting,
         onJoin: @escaping @MainActor () -> Void,
@@ -70,7 +69,7 @@ final class AlertPresenter {
                 self.dismiss()
                 // dismiss() уже опустошил windows, так что show вернёт true;
                 // читать тут нечего — это пересборка того же самого окна.
-                self.show(meeting, onJoin: onJoin, onSkip: onSkip)
+                _ = self.show(meeting, onJoin: onJoin, onSkip: onSkip)
             }
         }
 
