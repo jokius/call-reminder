@@ -9,10 +9,11 @@ SOURCES   := Sources Tests
 .DEFAULT_GOAL := build
 .PHONY: gen build test fmt fmt-check lint lint-fix check clean run
 
-gen: $(PROJECT)
-$(PROJECT): project.yml
-	xcodegen generate
-	@touch $@
+# xcodegen отрабатывает за 25 мс, поэтому генерируем всегда, а не по timestamp:
+# любая файловая зависимость врёт при УДАЛЕНИИ файла (нет файла — нет времени),
+# и проект остаётся со ссылкой на несуществующий исходник. Проверено.
+gen:
+	@xcodegen generate --quiet
 
 build: gen
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG) -quiet build
