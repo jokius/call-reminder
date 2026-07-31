@@ -43,6 +43,24 @@ struct MenuBarLabelTests {
         #expect(text.hasSuffix("…"))
     }
 
+    @Test(
+        "счётчик в окне идёт вверх после начала встречи",
+        arguments: [
+            (600.0, "через 10 мин"),
+            (60.0, "через 1 мин"),
+            (59.0, "через 59 сек"),
+            (1.0, "через 1 сек"),
+            (0.0, "начинается сейчас"),
+            (-59.0, "начинается сейчас"),
+            (-60.0, "идёт 1 мин"),
+            (-900.0, "идёт 15 мин"),
+            // ровно тот случай, который поймал пользователь: окно провисело 2 ч 36 мин
+            (-9360.0, "идёт 2 ч 36 мин"),
+        ])
+    func alertCountdown(offset: TimeInterval, expected: String) {
+        #expect(alertCountdownText(start: epoch.addingTimeInterval(offset), now: epoch) == expected)
+    }
+
     @Test("встреч нет")
     func noMeetings() {
         #expect(menuBarText(next: nil, now: epoch, format: .timeAndTitle) == "нет встреч")

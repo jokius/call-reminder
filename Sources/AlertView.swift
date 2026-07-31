@@ -5,21 +5,20 @@ struct AlertView: View {
     let onJoin: @MainActor () -> Void
     let onSkip: @MainActor () -> Void
 
-    private var startsIn: String {
-        let seconds = Int(meeting.start.timeIntervalSinceNow)
-        if seconds <= 0 { return "начинается сейчас" }
-        if seconds < 60 { return "через \(seconds) сек" }
-        return "через \(seconds / 60) мин"
-    }
-
     var body: some View {
         ZStack {
             Color.black.opacity(0.92).ignoresSafeArea()
 
             VStack(spacing: 28) {
-                Text(startsIn)
-                    .font(.system(size: 22, weight: .medium, design: .rounded))
-                    .foregroundStyle(.secondary)
+                // TimelineView, а не вычисление при отрисовке: `meeting` не меняется,
+                // поэтому SwiftUI перерисовал бы текст ровно один раз и счётчик
+                // застыл бы навсегда. Окно живёт до нажатия, так что показывать
+                // «через 59 сек» спустя два часа — прямое враньё.
+                TimelineView(.periodic(from: .now, by: 1)) { context in
+                    Text(alertCountdownText(start: meeting.start, now: context.date))
+                        .font(.system(size: 22, weight: .medium, design: .rounded))
+                        .foregroundStyle(.secondary)
+                }
 
                 Text(meeting.title)
                     .font(.system(size: 60, weight: .heavy, design: .rounded))
