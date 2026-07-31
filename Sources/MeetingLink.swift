@@ -31,8 +31,11 @@ enum MeetingLink {
     /// затем location, затем notes. Внутри текста предпочитаем ссылку с
     /// известным хостом созвона — в заметках обычно ещё лежат вики и таск-трекер.
     static func extract(url: URL?, location: String?, notes: String?) -> URL? {
-        if let url { return url }
-        let candidates = links(in: location) + links(in: notes)
+        // Поле url не имеет безусловного приоритета: замер на календаре пользователя
+        // показал 3 события, где там лежит не созвон (кастомная схема таск-трекера).
+        // Правило одно для всех источников — ссылка на созвон важнее любой другой.
+        var candidates = links(in: location) + links(in: notes)
+        if let url { candidates.insert(url, at: 0) }
         return candidates.first(where: isMeetingHost) ?? candidates.first
     }
 

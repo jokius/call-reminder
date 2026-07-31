@@ -26,6 +26,17 @@ struct MeetingLinkExtractTests {
         #expect(got?.host == "teams.microsoft.com")
     }
 
+    @Test("посторонний url не перебивает ссылку на созвон в заметках")
+    func foreignURLLosesToMeetingLink() {
+        // На реальном календаре пользователя замерено 3 события, где в поле url
+        // лежит кастомная схема таск-трекера, а не созвон.
+        let got = MeetingLink.extract(
+            url: URL(string: "todoist://task/9e94f7a3-397f-4980-a462-9d7358bca83e"),
+            location: nil,
+            notes: "звонок https://zoom.us/j/85512345678")
+        #expect(got?.host == "zoom.us")
+    }
+
     @Test("если ссылки на встречу нет — берём первую попавшуюся")
     func fallbackToFirstLink() {
         let got = MeetingLink.extract(url: nil, location: "Переговорка 3", notes: "https://example.com/doc")
