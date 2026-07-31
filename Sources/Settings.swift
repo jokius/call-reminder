@@ -4,11 +4,13 @@ import ServiceManagement
 enum BarFormat: String, CaseIterable, Sendable {
     case timeAndTitle
     case titleOnly
+    case timeOnly
 
     var label: String {
         switch self {
         case .timeAndTitle: return "Время и название"
         case .titleOnly: return "Только название"
+        case .timeOnly: return "Только время"
         }
     }
 }

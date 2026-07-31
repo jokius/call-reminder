@@ -29,6 +29,18 @@ struct MenuBarLabelTests {
         #expect(text == "Standup")
     }
 
+    @Test("только время")
+    func timeOnly() {
+        let text = menuBarText(next: meeting("Standup", startsIn: 720), now: epoch, format: .timeOnly)
+        #expect(text == "12м")
+    }
+
+    @Test("только время, встреча уже началась")
+    func timeOnlyStartingNow() {
+        let text = menuBarText(next: meeting("Standup", startsIn: 30), now: epoch, format: .timeOnly)
+        #expect(text == "сейчас")
+    }
+
     @Test("встреча вот-вот начнётся")
     func startingNow() {
         let text = menuBarText(next: meeting("Standup", startsIn: 30), now: epoch, format: .timeAndTitle)

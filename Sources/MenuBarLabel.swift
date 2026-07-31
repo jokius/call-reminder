@@ -8,10 +8,14 @@ func menuBarText(next: Meeting?, now: Date, format: BarFormat) -> String {
     guard let next else { return "нет встреч" }
 
     let title = truncate(next.title)
-    guard format == .timeAndTitle else { return title }
-
     let minutes = Countdown.minutesUntil(next.start, from: now)
-    return minutes <= 0 ? "сейчас · \(title)" : "\(minutes)м · \(title)"
+    let time = minutes <= 0 ? "сейчас" : "\(minutes)м"
+
+    switch format {
+    case .timeAndTitle: return "\(time) · \(title)"
+    case .titleOnly: return title
+    case .timeOnly: return time
+    }
 }
 
 /// Подпись над названием встречи в полноэкранном окне.
