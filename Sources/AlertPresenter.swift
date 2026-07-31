@@ -84,7 +84,9 @@ final class AlertPresenter {
         }
         for window in windows { window.orderOut(nil) }
         windows.removeAll()
-        previousApp?.activate()
+        // Приложение могли закрыть, пока висело окно: activate() на мертвяке вернёт
+        // false, и фокус останется на нас — LSUIElement без единого окна.
+        if let previousApp, !previousApp.isTerminated { previousApp.activate() }
         previousApp = nil
     }
 }
