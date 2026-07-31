@@ -16,12 +16,16 @@ final class AlertPresenter {
 
     var isShowing: Bool { !windows.isEmpty }
 
+    /// `false` — окно уже занято другой встречей и эту мы не показали.
+    /// Врать тут нельзя: движок по `true` помечает встречу обработанной,
+    /// и тихое «показал» означает потерянное напоминание о втором созвоне.
+    @discardableResult
     func show(
         _ meeting: Meeting,
         onJoin: @escaping @MainActor () -> Void,
         onSkip: @escaping @MainActor () -> Void
-    ) {
-        guard windows.isEmpty else { return }
+    ) -> Bool {
+        guard windows.isEmpty else { return false }
 
         let front = NSWorkspace.shared.frontmostApplication
         // Не запоминаем себя: иначе при закрытии «вернём» фокус приложению без окон
@@ -64,9 +68,13 @@ final class AlertPresenter {
             MainActor.assumeIsolated {
                 guard let self, self.isShowing else { return }
                 self.dismiss()
+                // dismiss() уже опустошил windows, так что show вернёт true;
+                // читать тут нечего — это пересборка того же самого окна.
                 self.show(meeting, onJoin: onJoin, onSkip: onSkip)
             }
         }
+
+        return true
     }
 
     func dismiss() {
