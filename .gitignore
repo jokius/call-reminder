@@ -1,0 +1,10 @@
+.DS_Store
+build/
+DerivedData/
+
+# Генерируются xcodegen — в гит не идут
+*.xcodeproj
+Sources/Info.plist
+
+xcuserdata/
+*.xcuserstate
