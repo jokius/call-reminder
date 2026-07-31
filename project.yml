@@ -17,7 +17,7 @@ settings:
     # меняется -> designated requirement не сходится). Только стабильная identity.
     CODE_SIGN_STYLE: Manual
     CODE_SIGN_IDENTITY: C3F9103E047C3BE5D2073859694934BAFFDC580A
-    DEVELOPMENT_TEAM: QGQQ6PZ64A
+    DEVELOPMENT_TEAM: JL7A6FPBTW   # OU сертификата, а не то, что в скобках в CN
 
 targets:
   callReminder:

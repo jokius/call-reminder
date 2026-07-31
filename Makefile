@@ -1,3 +1,5 @@
+SHELL     := /bin/bash
+
 PROJECT   := callReminder.xcodeproj
 SCHEME    := callReminder
 CONFIG    := Debug
@@ -16,7 +18,7 @@ build: gen
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG) -quiet build
 
 test: gen
-	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination '$(DEST)' -quiet test
+	set -o pipefail; xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination '$(DEST)' test 2>&1 | grep -E '✔|✘|passed|failed|error:|\*\* TEST'
 
 fmt:
 	swift format format --in-place --recursive --parallel $(SOURCES)
