@@ -27,7 +27,9 @@ final class ReminderEngine {
     /// в сгенерированное computed-свойство.
     @ObservationIgnored private var handled: Set<OccurrenceKey>
 
-    @ObservationIgnored var onShow: (@MainActor (Meeting) -> Void)?
+    /// Возвращает, состоялся ли показ. false (окно занято другой встречей) значит
+    /// «не считай обработанной» — иначе напоминание пропало бы навсегда.
+    @ObservationIgnored var onShow: (@MainActor (Meeting) -> Bool)?
     @ObservationIgnored var reload: (@MainActor () -> [Meeting])?
     @ObservationIgnored var lead: TimeInterval = 60
 
@@ -80,11 +82,14 @@ final class ReminderEngine {
         storage.prune(keeping: events.map(\.key), from: &handled)
     }
 
-    private func tick() {
-        now = .now
+    /// `now` параметром — чтобы тик проверялся тестом; таймер зовёт с дефолтом.
+    func tick(now: Date = .now) {
+        self.now = now
         guard let due = meetingToShow(events: events, now: now, lead: lead, handled: handled) else { return }
+        // Помечаем только после подтверждённого показа: если презентер занят
+        // соседней встречей, эта останется в очереди до следующего тика.
+        guard onShow?(due) == true else { return }
         markHandled(due.key)
-        onShow?(due)
     }
 
     func markHandled(_ key: OccurrenceKey) {
