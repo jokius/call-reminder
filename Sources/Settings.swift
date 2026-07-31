@@ -27,6 +27,9 @@ final class AppSettings {
         selectedCalendarIDs = Set(defaults.stringArray(forKey: Keys.calendars) ?? [])
     }
 
+    /// Варианты в выпадашке «показывать за».
+    static let leadPresets = [1, 2, 3, 5, 10, 15, 30]
+
     private enum Keys {
         static let lead = "leadMinutes"
         static let format = "barFormat"

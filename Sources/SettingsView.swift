@@ -7,11 +7,19 @@ struct SettingsView: View {
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
     @State private var launchError: String?
 
+    /// Уже сохранённое значение добавляется в список, даже если оно нестандартное:
+    /// иначе Picker не нашёл бы совпадения и показал пустую строку.
+    private var leadOptions: [Int] {
+        Set(AppSettings.leadPresets + [settings.leadMinutes]).sorted()
+    }
+
     var body: some View {
         Form {
             Section("Напоминание") {
-                Stepper(value: $settings.leadMinutes, in: 1...30) {
-                    Text("За \(settings.leadMinutes) мин до встречи")
+                Picker("Показывать за", selection: $settings.leadMinutes) {
+                    ForEach(leadOptions, id: \.self) { minutes in
+                        Text("\(minutes) мин").tag(minutes)
+                    }
                 }
             }
 
