@@ -29,6 +29,28 @@ struct MenuBarLabelTests {
         #expect(text == "Standup")
     }
 
+    @Test(
+        "больше часа разбивается на часы и минуты",
+        arguments: [
+            (5, "5м"),
+            (59, "59м"),
+            (60, "1ч"),
+            (83, "1ч 23м"),
+            // «143м» и было тем ребусом, ради которого всё затевалось
+            (143, "2ч 23м"),
+            (120, "2ч"),
+            (1439, "23ч 59м"),
+        ])
+    func compactDurationSplit(minutes: Int, expected: String) {
+        #expect(compactDuration(minutes) == expected)
+    }
+
+    @Test("в трее время до дальней встречи тоже с часами")
+    func menuBarFarMeeting() {
+        let text = menuBarText(next: meeting("Ретро", startsIn: 143 * 60), now: epoch, format: .timeOnly)
+        #expect(text == "2ч 23м")
+    }
+
     @Test("только время")
     func timeOnly() {
         let text = menuBarText(next: meeting("Standup", startsIn: 720), now: epoch, format: .timeOnly)
@@ -68,6 +90,8 @@ struct MenuBarLabelTests {
             (-900.0, "идёт 15 мин"),
             // ровно тот случай, который поймал пользователь: окно провисело 2 ч 36 мин
             (-9360.0, "идёт 2 ч 36 мин"),
+            (-7200.0, "идёт 2 ч"),
+            (8580.0, "через 2 ч 23 мин"),
         ])
     func alertCountdown(offset: TimeInterval, expected: String) {
         #expect(alertCountdownText(start: epoch.addingTimeInterval(offset), now: epoch) == expected)
