@@ -17,6 +17,9 @@ struct CallReminderApp: App {
         MenuBarExtra {
             MenuContent(model: delegate.model)
         } label: {
+            // Image + Text — единственное, что MenuBarExtra реально кладёт
+            // в статус-айтем: стили и фигуры он молча выбрасывает.
+            Image("TrayIcon")
             // label у MenuBarExtra рендерится не как SwiftUI-вьюха: текст ложится
             // в title статус-айтема, всё остальное молча выбрасывается. Поэтому
             // здесь только Text — стили и фигуры не имеют смысла.
