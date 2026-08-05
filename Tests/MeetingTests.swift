@@ -54,12 +54,9 @@ struct EventFilterTests {
     private func candidate(
         isAllDay: Bool = false,
         isCancelled: Bool = false,
-        participation: MyParticipation = .notInvited,
-        availability: Availability = .busy
+        participation: MyParticipation = .notInvited
     ) -> EventCandidate {
-        EventCandidate(
-            isAllDay: isAllDay, isCancelled: isCancelled,
-            participation: participation, availability: availability)
+        EventCandidate(isAllDay: isAllDay, isCancelled: isCancelled, participation: participation)
     }
 
     @Test("обычная встреча проходит")
@@ -82,15 +79,16 @@ struct EventFilterTests {
         #expect(!shouldRemind(candidate(participation: .declined)))
     }
 
-    @Test("принятое приглашение со статусом «свободен» всё равно напоминаем")
-    func freeButAccepted() {
-        // замерено: 8 из 41 free-событий — это принятые приглашения,
-        // включая рабочие созвоны. Глушить .free вслепую нельзя.
-        #expect(shouldRemind(candidate(participation: .accepted, availability: .free)))
+    @Test("личное событие без участников напоминаем")
+    func ownEventWithoutAttendees() {
+        // Замер на живом календаре: событие «Регистрация» в собственном календаре,
+        // без участников и помеченное «свободен», отсеивалось прежним правилом
+        // по availability — хотя напомнить о нём как раз и надо.
+        #expect(shouldRemind(candidate(participation: .notInvited)))
     }
 
-    @Test("«свободен» без приглашения — это не встреча")
-    func freeAndNotInvited() {
-        #expect(!shouldRemind(candidate(participation: .notInvited, availability: .free)))
+    @Test("приглашение без ответа напоминаем")
+    func pendingInvite() {
+        #expect(shouldRemind(candidate(participation: .pending)))
     }
 }

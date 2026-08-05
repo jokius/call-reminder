@@ -55,25 +55,23 @@ enum MyParticipation: Sendable {
     case pending, accepted, declined, tentative, unknown
 }
 
-enum Availability: Sendable {
-    case busy, free, other
-}
-
 /// Поля события, от которых зависит решение «напоминать или нет».
 /// Отдельный тип нужен, чтобы правило было чистым и проверяемым тестом.
 struct EventCandidate: Sendable {
     let isAllDay: Bool
     let isCancelled: Bool
     let participation: MyParticipation
-    let availability: Availability
 }
 
+/// Отсеиваем только то, о чём напоминать заведомо нечего.
+///
+/// По `availability` не фильтруем вовсе: правило «свободен и без приглашения —
+/// значит не встреча» отсекало на живом календаре обычные личные события
+/// вроде «Регистрация» в собственном календаре. Праздники и дни рождения
+/// и так уходят как all-day.
 func shouldRemind(_ event: EventCandidate) -> Bool {
     if event.isAllDay { return false }
     if event.isCancelled { return false }
     if event.participation == .declined { return false }
-    // «Свободен» само по себе не значит «не встреча»: замерено 8 из 41 таких
-    // событий — принятые приглашения. Отсекаем только когда приглашения нет вовсе.
-    if event.availability == .free, event.participation == .notInvited { return false }
     return true
 }

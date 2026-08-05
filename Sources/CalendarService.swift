@@ -66,8 +66,7 @@ final class CalendarService {
             isAllDay: event.isAllDay,
             // Заголовок EKEvent.h честно пишет, что единственный надёжный статус — canceled.
             isCancelled: event.status == .canceled,
-            participation: participation(event),
-            availability: availability(event))
+            participation: participation(event))
     }
 
     private func participation(_ event: EKEvent) -> MyParticipation {
@@ -83,14 +82,6 @@ final class CalendarService {
         case .declined: return .declined
         case .tentative: return .tentative
         default: return .unknown
-        }
-    }
-
-    private func availability(_ event: EKEvent) -> Availability {
-        switch event.availability {
-        case .busy: return .busy
-        case .free: return .free
-        default: return .other
         }
     }
 
