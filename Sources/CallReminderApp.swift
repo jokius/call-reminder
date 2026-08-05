@@ -141,11 +141,15 @@ struct MenuContent: View {
             Text("Встреч на сегодня нет")
         } else {
             ForEach(model.upcoming) { meeting in
-                Button(rowTitle(meeting)) {
-                    guard let link = meeting.link else { return }
-                    Task { await MeetingLink.open(link) }
+                if let link = meeting.link {
+                    Button(rowTitle(meeting)) {
+                        Task { await MeetingLink.open(link) }
+                    }
+                } else {
+                    // Обычной строкой, а не серой кнопкой: встреча без ссылки —
+                    // это нормальное напоминание, а не сломанный пункт меню.
+                    Text(rowTitle(meeting))
                 }
-                .disabled(meeting.link == nil)
             }
         }
 

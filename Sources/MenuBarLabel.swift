@@ -5,7 +5,9 @@ private let maxTitleLength = 25
 
 /// Текст статус-айтема. Чистая функция, чтобы формат проверялся тестом.
 func menuBarText(next: Meeting?, now: Date, format: BarFormat) -> String {
-    guard let next else { return "нет встреч" }
+    // Пусто, а не «нет встреч»: когда показывать нечего, в меню-баре
+    // остаётся одна иконка и строка не занимает место зря.
+    guard let next else { return "" }
 
     let title = truncate(next.title)
     let minutes = Countdown.minutesUntil(next.start, from: now)

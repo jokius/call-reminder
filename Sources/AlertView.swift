@@ -52,19 +52,26 @@ struct AlertView: View {
                     .foregroundStyle(.secondary)
 
                 VStack(spacing: 18) {
-                    Button("Подключиться", action: onJoin)
-                        .buttonStyle(BigActionButton(color: .green))
-                        .keyboardShortcut(.defaultAction)
-                        .disabled(meeting.link == nil)
-                    Button("Пропустить", action: onSkip)
-                        .buttonStyle(BigActionButton(color: .red))
-                        .keyboardShortcut(.cancelAction)
+                    if meeting.link == nil {
+                        // Подключаться некуда — незачем показывать мёртвую кнопку
+                        // и заставлять выбирать между двумя одинаковыми исходами.
+                        Button("Закрыть", action: onSkip)
+                            .buttonStyle(BigActionButton(color: .accentColor))
+                            .keyboardShortcut(.defaultAction)
+                    } else {
+                        Button("Подключиться", action: onJoin)
+                            .buttonStyle(BigActionButton(color: .green))
+                            .keyboardShortcut(.defaultAction)
+                        Button("Пропустить", action: onSkip)
+                            .buttonStyle(BigActionButton(color: .red))
+                            .keyboardShortcut(.cancelAction)
+                    }
                 }
                 .padding(.top, 12)
 
                 if meeting.link == nil {
                     // .tertiary на чёрном фоне не читается — проверено рендером
-                    Text("В событии нет ссылки на созвон")
+                    Text("Ссылки на созвон в событии нет")
                         .font(.system(size: 18, design: .rounded))
                         .foregroundStyle(.white.opacity(0.55))
                 }

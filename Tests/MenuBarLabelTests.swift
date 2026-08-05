@@ -97,8 +97,10 @@ struct MenuBarLabelTests {
         #expect(alertCountdownText(start: epoch.addingTimeInterval(offset), now: epoch) == expected)
     }
 
-    @Test("встреч нет")
-    func noMeetings() {
-        #expect(menuBarText(next: nil, now: epoch, format: .timeAndTitle) == "нет встреч")
+    @Test("встреч нет — в трее остаётся одна иконка", arguments: BarFormat.allCases)
+    func noMeetings(format: BarFormat) {
+        // Пустая строка, а не «нет встреч»: текст занимал бы место в меню-баре
+        // ради сообщения, что показывать нечего.
+        #expect(menuBarText(next: nil, now: epoch, format: format).isEmpty)
     }
 }
