@@ -75,9 +75,12 @@ final class ReminderEngine {
         }
     }
 
+    @ObservationIgnored private var lastReload: Date = .distantPast
+
     /// Перечитать события из календаря.
     func refresh() {
         guard let reload else { return }
+        lastReload = .now
         events = reload()
         storage.prune(keeping: events.map(\.key), from: &handled)
     }
@@ -85,6 +88,15 @@ final class ReminderEngine {
     /// `now` параметром — чтобы тик проверялся тестом; таймер зовёт с дефолтом.
     func tick(now: Date = .now) {
         self.now = now
+
+        // Раз в минуту перечитываем календарь. Без этого список живёт только
+        // за счёт EKEventStoreChanged: если календарь не менялся, после полуночи
+        // в меню-баре так и висели бы вчерашние встречи, а сегодняшние не пришли бы.
+        if now.timeIntervalSince(lastReload) >= 60 {
+            lastReload = now
+            refresh()
+        }
+
         guard let due = meetingToShow(events: events, now: now, lead: lead, handled: handled) else { return }
         // Помечаем только после подтверждённого показа: если презентер занят
         // соседней встречей, эта останется в очереди до следующего тика.

@@ -43,16 +43,15 @@ final class CalendarService {
             .sorted { ($0.account, $0.title) < ($1.account, $1.title) }
     }
 
-    /// Встречи на ближайшие `hours` часов из выбранных календарей.
+    /// Встречи из выбранных календарей до конца сегодняшнего дня.
     /// Пустой `calendarIDs` означает «все календари».
-    func upcoming(within hours: Double = 24, calendarIDs: Set<String>) -> [Meeting] {
-        let now = Date()
+    func upcoming(now: Date = Date(), calendarIDs: Set<String>) -> [Meeting] {
         let selected = store.calendars(for: .event)
             .filter { calendarIDs.isEmpty || calendarIDs.contains($0.calendarIdentifier) }
         guard !selected.isEmpty else { return [] }
 
         let predicate = store.predicateForEvents(
-            withStart: now, end: now.addingTimeInterval(hours * 3600), calendars: selected)
+            withStart: now, end: endOfDay(from: now), calendars: selected)
 
         return store.events(matching: predicate)
             // Предикат включает событие, закончившееся ровно в now — замерено.

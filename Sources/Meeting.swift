@@ -37,6 +37,17 @@ struct CalendarInfo: Identifiable, Hashable, Sendable {
     let account: String
 }
 
+/// Полночь наступающих суток — граница списка «на сегодня».
+///
+/// Считается через Calendar, а не прибавлением 24 часов: в дни перехода на
+/// летнее время сутки длятся 23 или 25 часов, и арифметика по секундам
+/// промахнулась бы мимо полуночи на час.
+func endOfDay(from now: Date, calendar: Calendar = .current) -> Date {
+    let startOfToday = calendar.startOfDay(for: now)
+    return calendar.date(byAdding: .day, value: 1, to: startOfToday)
+        ?? startOfToday.addingTimeInterval(86_400)
+}
+
 /// Мой ответ на приглашение.
 enum MyParticipation: Sendable {
     case notInvited  // приглашения нет, это моё собственное событие
