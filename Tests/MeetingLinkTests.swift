@@ -49,6 +49,64 @@ struct MeetingLinkExtractTests {
     }
 }
 
+@Suite("Имя сервиса созвона")
+struct ServiceNameTests {
+
+    @Test(
+        "известные сервисы",
+        arguments: [
+            ("https://meet.google.com/abc-defg-hij", "Google Meet"),
+            ("https://zoom.us/j/85512345678", "Zoom"),
+            ("https://company.zoom.us/j/123", "Zoom"),
+            ("https://zoomgov.com/j/123", "Zoom"),
+            ("https://teams.microsoft.com/l/meetup-join/x", "Microsoft Teams"),
+            ("https://acme.webex.com/meet/x", "Webex"),
+            ("https://telemost.yandex.ru/j/123", "Телемост"),
+        ])
+    func known(input: String, expected: String) throws {
+        let url = try #require(URL(string: input))
+        #expect(MeetingLink.serviceName(for: url) == expected)
+    }
+
+    @Test("незнакомый сервис показывается хостом — видно, куда поведёт кнопка")
+    func unknownShowsHost() throws {
+        let url = try #require(URL(string: "https://www.vaultconf.example.com/room/42"))
+        #expect(MeetingLink.serviceName(for: url) == "vaultconf.example.com")
+    }
+}
+
+@Suite("Длительность и интервал встречи")
+struct MeetingTimingTests {
+
+    private let epoch = Date(timeIntervalSince1970: 1_700_000_000)
+
+    @Test(
+        "длительность",
+        arguments: [
+            (30.0, "30 мин"),
+            (60.0, "1 ч"),
+            (90.0, "1 ч 30 мин"),
+            (0.0, "0 мин"),
+        ])
+    func duration(minutes: Double, expected: String) {
+        let end = epoch.addingTimeInterval(minutes * 60)
+        #expect(meetingDuration(start: epoch, end: end) == expected)
+    }
+
+    @Test("конец раньше начала не даёт отрицательную длительность")
+    func negativeDuration() {
+        #expect(meetingDuration(start: epoch, end: epoch.addingTimeInterval(-600)) == "0 мин")
+    }
+
+    @Test("интервал разделён en-dash с пробелами")
+    func timeRange() {
+        let text = meetingTimeRange(
+            start: epoch, end: epoch.addingTimeInterval(1800), locale: Locale(identifier: "ru_RU"))
+        #expect(text.contains(" – "))
+        #expect(text.split(separator: " – ").count == 2)
+    }
+}
+
 @Suite("Deep links")
 struct MeetingLinkDeepLinkTests {
 

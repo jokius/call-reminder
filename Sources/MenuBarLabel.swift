@@ -43,9 +43,24 @@ func alertCountdownText(start: Date, now: Date) -> String {
     return "идёт \(spelledDuration(elapsed / 60))"
 }
 
+/// Интервал встречи строкой: «14:30 – 15:00».
+func meetingTimeRange(start: Date, end: Date, locale: Locale = .current) -> String {
+    let formatter = DateFormatter()
+    formatter.locale = locale
+    formatter.timeStyle = .short
+    formatter.dateStyle = .none
+    return "\(formatter.string(from: start)) – \(formatter.string(from: end))"
+}
+
+/// Сколько длится встреча: «30 мин», «1 ч», «1 ч 30 мин».
+func meetingDuration(start: Date, end: Date) -> String {
+    let minutes = max(0, Int(end.timeIntervalSince(start) / 60))
+    return spelledDuration(minutes)
+}
+
 /// То же самое, но словами и с пробелами — в полноэкранном окне место есть,
 /// и «2 ч 36 мин» читается спокойнее, чем сжатое «2ч 36м» из меню-бара.
-private func spelledDuration(_ minutes: Int) -> String {
+func spelledDuration(_ minutes: Int) -> String {
     guard minutes >= 60 else { return "\(minutes) мин" }
     let hours = minutes / 60
     let rest = minutes % 60

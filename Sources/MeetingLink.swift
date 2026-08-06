@@ -97,6 +97,31 @@ enum MeetingLink {
         return URL(string: string)
     }
 
+    /// Человеческое имя сервиса — строкой под названием встречи.
+    /// Для незнакомого хоста возвращаем сам хост: это честнее, чем безликое
+    /// «Созвон», и сразу видно, куда именно поведёт кнопка.
+    static func serviceName(for url: URL) -> String {
+        guard let host = url.host?.lowercased() else { return "Созвон" }
+        let known: [(suffix: String, name: String)] = [
+            ("meet.google.com", "Google Meet"),
+            ("teams.microsoft.com", "Microsoft Teams"),
+            ("teams.live.com", "Microsoft Teams"),
+            ("teams.microsoft.us", "Microsoft Teams"),
+            ("webex.com", "Webex"),
+            ("whereby.com", "Whereby"),
+            ("meet.jit.si", "Jitsi"),
+            ("discord.com", "Discord"),
+            ("slack.com", "Slack"),
+            ("telemost.yandex.ru", "Телемост"),
+            ("ktalk.ru", "Контур.Толк"),
+        ]
+        if let match = known.first(where: { host == $0.suffix || host.hasSuffix("." + $0.suffix) }) {
+            return match.name
+        }
+        if zoomSuffixes.contains(where: { host == $0 || host.hasSuffix("." + $0) }) { return "Zoom" }
+        return host.hasPrefix("www.") ? String(host.dropFirst(4)) : host
+    }
+
     /// Есть ли в системе приложение, которое возьмёт эту схему. Синхронно, ничего не запускает.
     static func hasHandler(_ url: URL) -> Bool {
         NSWorkspace.shared.urlForApplication(toOpen: url) != nil
