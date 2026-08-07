@@ -13,6 +13,7 @@ final class AlertPresenter {
     private var windows: [KeyableWindow] = []
     private var previousApp: NSRunningApplication?
     private var screenObserver: (any NSObjectProtocol)?
+    private var keyMonitor: (any Any)?
 
     var isShowing: Bool { !windows.isEmpty }
 
@@ -60,6 +61,32 @@ final class AlertPresenter {
         NSApp.activate(ignoringOtherApps: true)
         windows.first?.makeKeyAndOrderFront(nil)
 
+        // Клавиши обрабатываем сами, а не через .keyboardShortcut у кнопок:
+        // в приложении со сценами MenuBarExtra и Settings шорткат SwiftUI до
+        // окна не доходил (кнопка рисовалась с подсказкой ⏎, а Enter молчал),
+        // а в отдельной сборке срабатывал дважды на одно нажатие.
+        // Локальный монитор ловит keyDown ровно пока окно на экране.
+        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            // Через границу актора идёт только код клавиши: NSEvent не Sendable.
+            let code = event.keyCode
+            var handled = false
+            MainActor.assumeIsolated {
+                guard let self, self.isShowing else { return }
+                switch code {
+                case 36, 76:  // Return и Enter на цифровом блоке
+                    onJoin()
+                    handled = true
+                case 53:  // Esc
+                    onSkip()
+                    handled = true
+                default:
+                    break
+                }
+            }
+            // nil — событие съедено, иначе пропускаем дальше по цепочке.
+            return handled ? nil : event
+        }
+
         // Воткнули монитор, пока окно висит — пересобрать окна.
         screenObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main
@@ -77,6 +104,10 @@ final class AlertPresenter {
     }
 
     func dismiss() {
+        if let keyMonitor {
+            NSEvent.removeMonitor(keyMonitor)
+            self.keyMonitor = nil
+        }
         if let screenObserver {
             NotificationCenter.default.removeObserver(screenObserver)
             self.screenObserver = nil

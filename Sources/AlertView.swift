@@ -243,7 +243,6 @@ struct AlertView: View {
                     }
                 }
                 .buttonStyle(SecondaryActionButton(prominent: true))
-                .keyboardShortcut(.cancelAction)
             } else {
                 Button(action: onJoin) {
                     HStack(spacing: 14) {
@@ -252,7 +251,6 @@ struct AlertView: View {
                     }
                 }
                 .buttonStyle(PrimaryActionButton())
-                .keyboardShortcut(.defaultAction)
                 .frame(width: Layout.primaryWidth)
 
                 Button(action: onSkip) {
@@ -262,7 +260,6 @@ struct AlertView: View {
                     }
                 }
                 .buttonStyle(SecondaryActionButton())
-                .keyboardShortcut(.cancelAction)
                 .frame(width: Layout.secondaryWidth)
             }
         }
