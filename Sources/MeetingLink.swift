@@ -16,7 +16,42 @@ enum MeetingLink {
 
     private static func isMeetingHost(_ url: URL) -> Bool {
         guard let host = url.host?.lowercased() else { return false }
-        return meetingHostSuffixes.contains { host == $0 || host.hasSuffix("." + $0) }
+        guard meetingHostSuffixes.contains(where: { host == $0 || host.hasSuffix("." + $0) }) else {
+            return false
+        }
+        // У Teams на том же хосте живут служебные страницы: рядом со ссылкой
+        // на встречу в приглашении лежит `/meetingOptions/`. Присоединиться
+        // можно двумя путями — старым `/l/meetup-join/...` и новым `/meet/<id>`,
+        // оба встречаются в одном календаре.
+        if host.contains("teams.") {
+            return url.path.hasPrefix("/l/") || url.path.hasPrefix("/meet/")
+        }
+        return true
+    }
+
+    /// В заметках ссылку часто заворачивают в угловые скобки, и NSDataDetector
+    /// прихватывает всё, что идёт следом, вместе со второй ссылкой.
+    /// Замерено: `…/meet/439387043134551?p=VqlCBNiRnyp6GVNMCW%3Chttps://eur05…`.
+    private static func trimTrailingJunk(_ url: URL) -> URL {
+        let text = url.absoluteString
+        guard let cut = text.range(of: "%3C", options: .caseInsensitive) ?? text.range(of: "<") else {
+            return url
+        }
+        return URL(string: String(text[text.startIndex..<cut.lowerBound])) ?? url
+    }
+
+    /// Корпоративная защита Exchange заворачивает ссылки в приглашениях:
+    /// `eur05.safelinks.protection.outlook.com/?url=<исходный>`. Хост обёртки
+    /// не похож на созвон, поэтому без разворачивания правило выбора не работает
+    /// вовсе — а первой в заметках лежит ссылка на страницу справки Teams,
+    /// и открывалась именно она.
+    private static func unwrapSafeLink(_ url: URL) -> URL {
+        guard url.host?.lowercased().hasSuffix("safelinks.protection.outlook.com") == true,
+            let comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
+            let inner = comps.queryItems?.first(where: { $0.name == "url" })?.value,
+            let unwrapped = URL(string: inner)
+        else { return url }
+        return unwrapped
     }
 
     private static func links(in text: String?) -> [URL] {
@@ -36,6 +71,9 @@ enum MeetingLink {
         // Правило одно для всех источников — ссылка на созвон важнее любой другой.
         var candidates = links(in: location) + links(in: notes)
         if let url { candidates.insert(url, at: 0) }
+        // Разворачиваем до выбора: иначе у всех кандидатов один и тот же
+        // хост обёртки и отличить встречу от справки невозможно.
+        candidates = candidates.map { trimTrailingJunk(unwrapSafeLink($0)) }
         return candidates.first(where: isMeetingHost) ?? candidates.first
     }
 

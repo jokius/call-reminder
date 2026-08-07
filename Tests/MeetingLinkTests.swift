@@ -43,6 +43,50 @@ struct MeetingLinkExtractTests {
         #expect(got?.absoluteString == "https://example.com/doc")
     }
 
+    @Test("Safe Links из Exchange разворачивается, и выбирается встреча, а не справка")
+    func unwrapsSafeLinks() throws {
+        // Реальные заметки Teams-приглашения из рабочего календаря: три ссылки,
+        // все завёрнуты в safelinks. Первая — страница справки, вторая — встреча,
+        // третья — параметры собрания. Открывалась первая.
+        let notes = """
+            Join on your computer
+            https://eur05.safelinks.protection.outlook.com/?url=https%3A%2F%2Faka.ms%2FJoinTeamsMeeting%3Fomkt%3Duk-UA&data=05
+            https://eur05.safelinks.protection.outlook.com/ap/t-59584e83/?url=https%3A%2F%2Fteams.microsoft.com%2Fl%2Fmeetup-join%2F19%253ameeting_ABC%2540thread.v2%2F0&data=05
+            https://eur05.safelinks.protection.outlook.com/?url=https%3A%2F%2Fteams.microsoft.com%2FmeetingOptions%2F%3ForganizerId%3Dx&data=05
+            """
+        let got = try #require(
+            MeetingLink.extract(url: nil, location: "Microsoft Teams Meeting", notes: notes))
+        #expect(got.host == "teams.microsoft.com")
+        #expect(got.path.hasPrefix("/l/meetup-join"))
+    }
+
+    @Test("служебная страница Teams не считается ссылкой на встречу")
+    func teamsMeetingOptionsIsNotAMeeting() throws {
+        let notes = "https://teams.microsoft.com/meetingOptions/?organizerId=x&threadId=y"
+        let got = MeetingLink.extract(url: nil, location: nil, notes: notes)
+        // Ссылок на созвон нет, поэтому берётся первая попавшаяся — но как
+        // «ссылку на созвон» мы её не опознаём и не даём ей приоритет.
+        #expect(got?.path.hasPrefix("/l/") != true)
+    }
+
+    @Test("новый формат ссылки Teams /meet/ тоже считается встречей")
+    func teamsShortMeetLink() throws {
+        let notes =
+            "https://teams.microsoft.com/meetingOptions/?organizerId=x\n"
+            + "https://teams.microsoft.com/meet/439387043134551?p=SecretPass"
+        let got = try #require(MeetingLink.extract(url: nil, location: nil, notes: notes))
+        #expect(got.path.hasPrefix("/meet/"))
+    }
+
+    @Test("хвост от соседней ссылки отрезается")
+    func trimsTrailingJunk() throws {
+        // В заметках ссылка стоит в угловых скобках, и детектор прихватывает
+        // всё, что идёт следом. Замерено на живом событии.
+        let notes = "https://teams.microsoft.com/meet/439387043134551?p=Abc%3Chttps://example.com/next"
+        let got = try #require(MeetingLink.extract(url: nil, location: nil, notes: notes))
+        #expect(got.absoluteString == "https://teams.microsoft.com/meet/439387043134551?p=Abc")
+    }
+
     @Test("нет ссылок вообще")
     func noLinks() {
         #expect(MeetingLink.extract(url: nil, location: "Переговорка 3", notes: nil) == nil)
