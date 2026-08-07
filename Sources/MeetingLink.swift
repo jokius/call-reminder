@@ -41,17 +41,24 @@ enum MeetingLink {
 
     /// Нативный deep link, если он есть. nil — открывать исходный https.
     ///
-    /// ponytail: формат Zoom приходит с сервера и может смениться без апдейта
-    /// клиента, поэтому fallback на https в `open(_:)` обязателен, а не желателен.
+    /// Teams здесь намеренно нет. Обе формы `msteams:` — и с хостом, и без —
+    /// система резолвит в Teams.app, поэтому hasHandler считает их рабочими,
+    /// но сам клиент такую ссылку не разбирает и уводит на страницу справки.
+    /// Проверено на живой ссылке из календаря дважды. Похоже, страница
+    /// `teams.microsoft.com/l/meetup-join` не редирект, а серверный резолв:
+    /// клиенту уходит уже её собственный deep link с токенами, а собрать его
+    /// локально нельзя — та же история, что с персональными ссылками Zoom.
+    /// https открывается в браузере и сам перекидывает в приложение.
+    ///
+    /// ponytail: формат Zoom тоже приходит с сервера и может смениться без
+    /// апдейта клиента, поэтому fallback на https в `open(_:)` обязателен.
     static func nativeDeepLink(for url: URL) -> URL? {
         guard let comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
             let host = comps.host?.lowercased(),
             comps.scheme?.hasPrefix("http") == true
         else { return nil }
 
-        if let zoom = zoomDeepLink(host: host, comps: comps) { return zoom }
-        if let teams = teamsDeepLink(host: host, comps: comps) { return teams }
-        return nil
+        return zoomDeepLink(host: host, comps: comps)
     }
 
     private static let zoomSuffixes = [
@@ -83,21 +90,6 @@ enum MeetingLink {
         // остальные параметры (_x_zm_rtaid и прочий трекинг редиректа) выбрасываем
         out.queryItems = query
         return out.url
-    }
-
-    private static func teamsDeepLink(host: String, comps: URLComponents) -> URL? {
-        guard
-            host == "teams.microsoft.com" || host == "teams.live.com"
-                || host == "teams.microsoft.us" || host.hasSuffix(".teams.microsoft.us")
-        else { return nil }
-        guard comps.percentEncodedPath.hasPrefix("/l/") else { return nil }
-        // Хост обязателен. Форма `msteams:/l/...` без него тоже резолвится
-        // в Teams.app (и hasHandler говорит «всё хорошо»), но сам Teams её
-        // не разбирает и уводит на страницу справки — проверено на живой ссылке.
-        // Именно percentEncodedPath: comps.path декодирует %3a и %40 и ломает thread-id.
-        var string = "msteams://" + host + comps.percentEncodedPath
-        if let query = comps.percentEncodedQuery, !query.isEmpty { string += "?" + query }
-        return URL(string: string)
     }
 
     /// Человеческое имя сервиса — строкой под названием встречи.

@@ -153,26 +153,17 @@ struct MeetingLinkDeepLinkTests {
         #expect(MeetingLink.nativeDeepLink(for: url) == nil)
     }
 
-    @Test("Teams: percent-encoding в пути сохраняется байт в байт")
-    func teams() throws {
+    @Test("Teams не превращаем в deep link — клиент не разбирает msteams-ссылки")
+    func teamsStaysHTTPS() throws {
+        // Проверено дважды на живой ссылке из календаря: и msteams:/l/...,
+        // и msteams://teams.microsoft.com/l/... открывают страницу справки.
+        // Система при этом резолвит обе в Teams.app, так что hasHandler
+        // на них не спасает — единственный рабочий путь остаётся через https.
         let raw =
             "https://teams.microsoft.com/l/meetup-join/19%3ameeting_ABC%40thread.v2/0"
             + "?context=%7b%22Tid%22%3a%22t%22%7d"
         let url = try #require(URL(string: raw))
-        let got = MeetingLink.nativeDeepLink(for: url)?.absoluteString
-        #expect(
-            got == "msteams://teams.microsoft.com/l/meetup-join/19%3ameeting_ABC%40thread.v2/0"
-                + "?context=%7b%22Tid%22%3a%22t%22%7d")
-    }
-
-    @Test("Teams: хост в deep link обязателен, иначе Teams уводит на справку")
-    func teamsKeepsHost() throws {
-        let url = try #require(URL(string: "https://teams.microsoft.com/l/meetup-join/19%3ameeting_X/0"))
-        let got = try #require(MeetingLink.nativeDeepLink(for: url))
-        // Форма без хоста (msteams:/l/...) резолвится в Teams.app, но не работает —
-        // именно на ней ломалась живая ссылка из календаря.
-        #expect(got.host == "teams.microsoft.com")
-        #expect(got.absoluteString.hasPrefix("msteams://teams.microsoft.com/l/"))
+        #expect(MeetingLink.nativeDeepLink(for: url) == nil)
     }
 
     @Test(
