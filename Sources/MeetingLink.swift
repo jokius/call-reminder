@@ -91,8 +91,11 @@ enum MeetingLink {
                 || host == "teams.microsoft.us" || host.hasSuffix(".teams.microsoft.us")
         else { return nil }
         guard comps.percentEncodedPath.hasPrefix("/l/") else { return nil }
+        // Хост обязателен. Форма `msteams:/l/...` без него тоже резолвится
+        // в Teams.app (и hasHandler говорит «всё хорошо»), но сам Teams её
+        // не разбирает и уводит на страницу справки — проверено на живой ссылке.
         // Именно percentEncodedPath: comps.path декодирует %3a и %40 и ломает thread-id.
-        var string = "msteams:" + comps.percentEncodedPath
+        var string = "msteams://" + host + comps.percentEncodedPath
         if let query = comps.percentEncodedQuery, !query.isEmpty { string += "?" + query }
         return URL(string: string)
     }
