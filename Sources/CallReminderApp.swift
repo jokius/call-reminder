@@ -69,6 +69,8 @@ final class AppModel {
         }
 
         calendars = calendar.calendars()
+        // Первый запуск: галочки проставляются сами, дальше выбор за пользователем.
+        settings.selectAllIfUnconfigured(calendars)
         calendar.onChange = { [weak self] in
             self?.reloadCalendars()
             self?.engine.refresh()

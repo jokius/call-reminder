@@ -46,8 +46,10 @@ final class CalendarService {
     /// Встречи из выбранных календарей до конца сегодняшнего дня.
     /// Пустой `calendarIDs` означает «все календари».
     func upcoming(now: Date = Date(), calendarIDs: Set<String>) -> [Meeting] {
+        // Пустой набор — это «ни одного», а не «все»: иначе снятые галочки
+        // в настройках ничего не выключают.
         let selected = store.calendars(for: .event)
-            .filter { calendarIDs.isEmpty || calendarIDs.contains($0.calendarIdentifier) }
+            .filter { calendarIDs.contains($0.calendarIdentifier) }
         guard !selected.isEmpty else { return [] }
 
         let predicate = store.predicateForEvents(

@@ -9,3 +9,6 @@ Sources/Info.plist
 
 xcuserdata/
 *.xcuserstate
+
+# Личные настройки подписи
+signing.local

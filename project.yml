@@ -13,11 +13,11 @@ settings:
     SWIFT_STRICT_CONCURRENCY: complete
     MARKETING_VERSION: "0.1.0"
     CURRENT_PROJECT_VERSION: "1"
-    # Ad-hoc подпись ломает TCC-грант календаря на каждой пересборке (cdhash
-    # меняется -> designated requirement не сходится). Только стабильная identity.
+    # По умолчанию ad-hoc, чтобы проект собирался у любого без настройки.
+    # Своя identity задаётся в signing.local (см. README): ad-hoc меняет cdhash
+    # при каждой сборке, из-за чего macOS заново спрашивает доступ к Календарю.
     CODE_SIGN_STYLE: Manual
-    CODE_SIGN_IDENTITY: C3F9103E047C3BE5D2073859694934BAFFDC580A
-    DEVELOPMENT_TEAM: JL7A6FPBTW   # OU сертификата, а не то, что в скобках в CN
+    CODE_SIGN_IDENTITY: "-"
 
 targets:
   callReminder:
@@ -28,14 +28,17 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.konayre.callreminder
-        PRODUCT_NAME: callReminder
+        PRODUCT_NAME: Call Reminder
+        # Модуль остаётся callReminder: иначе @testable import поедет
+        # вслед за отображаемым именем и станет Call_Reminder.
+        PRODUCT_MODULE_NAME: callReminder
         ENABLE_APP_SANDBOX: NO
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     info:
       path: Sources/Info.plist
       properties:
-        CFBundleName: callReminder
-        CFBundleDisplayName: callReminder
+        CFBundleName: Call Reminder
+        CFBundleDisplayName: Call Reminder
         CFBundlePackageType: APPL
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
@@ -68,7 +71,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.konayre.callreminder.tests
         GENERATE_INFOPLIST_FILE: "YES"
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/callReminder.app/Contents/MacOS/callReminder"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Call Reminder.app/Contents/MacOS/Call Reminder"
         BUNDLE_LOADER: "$(TEST_HOST)"
 
 schemes:

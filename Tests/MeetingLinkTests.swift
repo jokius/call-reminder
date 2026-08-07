@@ -31,7 +31,7 @@ struct MeetingLinkExtractTests {
         // На реальном календаре пользователя замерено 3 события, где в поле url
         // лежит кастомная схема таск-трекера, а не созвон.
         let got = MeetingLink.extract(
-            url: URL(string: "todoist://task/9e94f7a3-397f-4980-a462-9d7358bca83e"),
+            url: URL(string: "todoist://task/00000000-0000-0000-0000-000000000000"),
             location: nil,
             notes: "звонок https://zoom.us/j/85512345678")
         #expect(got?.host == "zoom.us")

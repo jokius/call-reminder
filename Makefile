@@ -1,7 +1,14 @@
 SHELL     := /bin/bash
 
+# Личная identity для подписи — в signing.local, он не в гите.
+# Без него сборка идёт с ad-hoc подписью: работает, но macOS будет
+# переспрашивать доступ к Календарю после каждой пересборки.
+-include signing.local
+SIGN_ARGS  = $(if $(CODE_SIGN_IDENTITY),CODE_SIGN_IDENTITY="$(CODE_SIGN_IDENTITY)" DEVELOPMENT_TEAM="$(DEVELOPMENT_TEAM)",)
+
 PROJECT   := callReminder.xcodeproj
 SCHEME    := callReminder
+APP_NAME  := Call Reminder
 CONFIG    := Debug
 DEST      := platform=macOS,arch=arm64
 SOURCES   := Sources Tests
@@ -16,27 +23,27 @@ gen:
 	@xcodegen generate --quiet
 
 build: gen
-	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG) -quiet build
+	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG) -quiet $(SIGN_ARGS) build
 
 release: gen
-	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration Release -quiet build
+	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration Release -quiet $(SIGN_ARGS) build
 
 # Ставим в /Applications: оттуда работает автозапуск через SMAppService,
 # и приложение переживает очистку DerivedData.
 install: release
-	@APP=$$(xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration Release \
+	@BUILT=$$(xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration Release \
 	  -showBuildSettings 2>/dev/null \
 	  | awk -F' = ' '/ BUILT_PRODUCTS_DIR /{d=$$2} / FULL_PRODUCT_NAME /{n=$$2} END{print d"/"n}'); \
-	  pkill -f "$(SCHEME).app/Contents/MacOS/$(SCHEME)" 2>/dev/null || true; sleep 1; \
-	  rm -rf "/Applications/$(SCHEME).app"; \
-	  cp -R "$$APP" /Applications/; \
-	  codesign --verify --deep --strict "/Applications/$(SCHEME).app" && echo "подпись цела"; \
-	  echo "установлено: /Applications/$(SCHEME).app"; \
-	  open "/Applications/$(SCHEME).app"
+	  pkill -f "$(APP_NAME).app/Contents/MacOS/$(APP_NAME)" 2>/dev/null || true; sleep 1; \
+	  rm -rf "/Applications/$(APP_NAME).app"; \
+	  cp -R "$$BUILT" /Applications/; \
+	  codesign --verify --deep --strict "/Applications/$(APP_NAME).app" && echo "подпись цела"; \
+	  echo "установлено: /Applications/$(APP_NAME).app"; \
+	  open "/Applications/$(APP_NAME).app"
 
 uninstall:
-	pkill -f "$(SCHEME).app/Contents/MacOS/$(SCHEME)" 2>/dev/null || true
-	rm -rf "/Applications/$(SCHEME).app"
+	pkill -f "$(APP_NAME).app/Contents/MacOS/$(APP_NAME)" 2>/dev/null || true
+	rm -rf "/Applications/$(APP_NAME).app"
 
 test: gen
 	set -o pipefail; xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination '$(DEST)' test 2>&1 | grep -E '✔|✘|passed|failed|error:|\*\* TEST'
@@ -60,7 +67,7 @@ clean:
 	rm -rf $(PROJECT) build
 
 run: build
-	@APP=$$(xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG) \
+	@BUILT=$$(xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG) \
 	  -showBuildSettings 2>/dev/null \
 	  | awk -F' = ' '/ BUILT_PRODUCTS_DIR /{d=$$2} / FULL_PRODUCT_NAME /{n=$$2} END{print d"/"n}'); \
 	  echo "open $$APP"; open "$$APP"

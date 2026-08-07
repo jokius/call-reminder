@@ -42,7 +42,7 @@ struct SettingsView: View {
                             Text("\(calendar.title)  ·  \(calendar.account)")
                         }
                     }
-                    Text("Если не выбрано ничего — учитываются все календари.")
+                    Text("Встречи берутся только из отмеченных календарей.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

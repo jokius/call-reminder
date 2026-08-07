@@ -24,8 +24,14 @@ final class AppSettings {
         self.defaults = defaults
         leadMinutes = defaults.object(forKey: Keys.lead) as? Int ?? 1
         barFormat = BarFormat(rawValue: defaults.string(forKey: Keys.format) ?? "") ?? .timeAndTitle
+        // Отличаем «ещё ни разу не выбирал» от «снял все галочки сознательно».
+        // Без этого пустой список приходилось трактовать как «все календари»,
+        // и снятые галочки не выключали ничего.
+        calendarsConfigured = defaults.object(forKey: Keys.calendars) != nil
         selectedCalendarIDs = Set(defaults.stringArray(forKey: Keys.calendars) ?? [])
     }
+
+    private(set) var calendarsConfigured: Bool
 
     /// Варианты в выпадашке «показывать за».
     static let leadPresets = [1, 2, 3, 5, 10, 15, 30]
@@ -45,9 +51,20 @@ final class AppSettings {
     }
 
     /// Идентификаторы календарей, а не названия: у пользователя бывает
-    /// несколько разных календарей с одинаковым title. Пустое множество = все.
+    /// несколько разных календарей с одинаковым title.
+    /// Пустое множество означает ровно то, что написано: ни одного.
     var selectedCalendarIDs: Set<String> {
-        didSet { defaults.set(Array(selectedCalendarIDs), forKey: Keys.calendars) }
+        didSet {
+            defaults.set(Array(selectedCalendarIDs), forKey: Keys.calendars)
+            calendarsConfigured = true
+        }
+    }
+
+    /// Первый запуск: включаем все календари, чтобы приложение сразу работало,
+    /// но галочки при этом стоят — и снять их можно осмысленно.
+    func selectAllIfUnconfigured(_ available: [CalendarInfo]) {
+        guard !calendarsConfigured, !available.isEmpty else { return }
+        selectedCalendarIDs = Set(available.map(\.id))
     }
 
     var lead: TimeInterval { TimeInterval(leadMinutes * 60) }
