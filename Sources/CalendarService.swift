@@ -100,7 +100,7 @@ final class CalendarService {
                 seriesID: rawID.components(separatedBy: "/RID=")[0],
                 calendarID: event.calendar?.calendarIdentifier ?? "",
                 occurrence: occurrence),
-            title: event.title ?? "Без названия",
+            title: event.title ?? String(localized: "Untitled"),
             start: start,
             end: end,
             link: MeetingLink.extract(url: event.url, location: event.location, notes: event.notes))

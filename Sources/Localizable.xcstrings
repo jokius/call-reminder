@@ -1,0 +1,278 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%lld h %lld min" : {
+      "comment" : "Длительность встречи словами в полноэкранном окне: «1 ч 30 мин». Ключ непозиционный — Swift выводит именно такой из двух интерполяций, проверено",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lld ч %lld мин" }
+        }
+      }
+    },
+    "%lldh %lldm" : {
+      "comment" : "Сжатая длительность в меню-баре: «1ч 30м»",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lldч %lldм" }
+        }
+      }
+    },
+    "%lld h" : {
+      "comment" : "Целые часы словами: «2 ч»",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lld ч" }
+        }
+      }
+    },
+    "%lld min" : {
+      "comment" : "Минуты словами. Используется и в окне напоминания, и в выпадашке настроек",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lld мин" }
+        }
+      }
+    },
+    "%lldh" : {
+      "comment" : "Сжатые целые часы в меню-баре: «2ч»",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lldч" }
+        }
+      }
+    },
+    "%lldm" : {
+      "comment" : "Сжатые минуты в меню-баре: «45м»",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "%lldм" }
+        }
+      }
+    },
+    "Allow in System Settings" : {
+      "comment" : "Кнопка, когда автозапуск выключен руками в системных настройках",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Разрешить в Системных настройках" }
+        }
+      }
+    },
+    "Call" : {
+      "comment" : "Запасное имя сервиса, когда из ссылки не вытащить хост",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Созвон" }
+        }
+      }
+    },
+    "Calendars" : {
+      "comment" : "Заголовок секции настроек",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Календари" }
+        }
+      }
+    },
+    "Dismiss" : {
+      "comment" : "Единственная кнопка в окне напоминания, когда подключаться некуда",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Закрыть" }
+        }
+      }
+    },
+    "in %@" : {
+      "comment" : "Счётчик до начала встречи: «через 5 мин». Подставляется уже готовая длительность",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "через %@" }
+        }
+      }
+    },
+    "in %lld sec" : {
+      "comment" : "Счётчик, когда до начала меньше минуты",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "через %lld сек" }
+        }
+      }
+    },
+    "Join" : {
+      "comment" : "Главная кнопка в окне напоминания",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Подключиться" }
+        }
+      }
+    },
+    "Launch at login" : {
+      "comment" : "Переключатель автозапуска",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Запускать при входе" }
+        }
+      }
+    },
+    "Menu bar" : {
+      "comment" : "Заголовок секции настроек",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Меню-бар" }
+        }
+      }
+    },
+    "No access" : {
+      "comment" : "Текст в меню-баре, когда нет доступа к Календарю. Строчная буква — это статус, а не заголовок",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "нет доступа" }
+        }
+      }
+    },
+    "No calendars available" : {
+      "comment" : "Пустой список календарей в настройках",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Нет доступных календарей" }
+        }
+      }
+    },
+    "No Calendar access — open Settings" : {
+      "comment" : "Пункт меню, ведущий в системные настройки приватности",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Нет доступа к Календарю — открыть настройки" }
+        }
+      }
+    },
+    "No meeting link" : {
+      "comment" : "Встаёт на место имени сервиса, когда ссылки на созвон в событии нет",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Ссылки на созвон нет" }
+        }
+      }
+    },
+    "No meetings today" : {
+      "comment" : "Пустое меню, когда встреч на сегодня не осталось",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Встреч на сегодня нет" }
+        }
+      }
+    },
+    "Notify before" : {
+      "comment" : "За сколько минут до встречи показывать окно",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Показывать за" }
+        }
+      }
+    },
+    "now" : {
+      "comment" : "Меню-бар, когда встреча уже началась. Строчная буква намеренно",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "сейчас" }
+        }
+      }
+    },
+    "Only checked calendars are used." : {
+      "comment" : "Пояснение под списком календарей",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Встречи берутся только из отмеченных календарей." }
+        }
+      }
+    },
+    "Quit" : {
+      "comment" : "Пункт меню выхода",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Выход" }
+        }
+      }
+    },
+    "Reminder" : {
+      "comment" : "Заголовок секции настроек",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Напоминание" }
+        }
+      }
+    },
+    "running for %@" : {
+      "comment" : "Счётчик после начала встречи: «идёт 5 мин»",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "идёт %@" }
+        }
+      }
+    },
+    "Settings…" : {
+      "comment" : "Пункт меню, открывающий настройки",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Настройки…" }
+        }
+      }
+    },
+    "Show" : {
+      "comment" : "Что показывать в меню-баре",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Показывать" }
+        }
+      }
+    },
+    "Skip" : {
+      "comment" : "Вторая кнопка в окне напоминания — закрыть, не подключаясь",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Пропустить" }
+        }
+      }
+    },
+    "starting now" : {
+      "comment" : "Счётчик в первую минуту после начала встречи",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "начинается сейчас" }
+        }
+      }
+    },
+    "Untitled" : {
+      "comment" : "Событие без названия — показывается и в меню-баре, и в окне напоминания",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Без названия" }
+        }
+      }
+    },
+    "Time and title" : {
+      "comment" : "Формат меню-бара",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Время и название" }
+        }
+      }
+    },
+    "Time only" : {
+      "comment" : "Формат меню-бара",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Только время" }
+        }
+      }
+    },
+    "Title only" : {
+      "comment" : "Формат меню-бара",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Только название" }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

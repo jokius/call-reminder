@@ -11,7 +11,7 @@ func menuBarText(next: Meeting?, now: Date, format: BarFormat) -> String {
 
     let title = truncate(next.title)
     let minutes = Countdown.minutesUntil(next.start, from: now)
-    let time = minutes <= 0 ? "сейчас" : compactDuration(minutes)
+    let time = minutes <= 0 ? String(localized: "now") : compactDuration(minutes)
 
     switch format {
     case .timeAndTitle: return "\(time) · \(title)"
@@ -23,10 +23,10 @@ func menuBarText(next: Meeting?, now: Date, format: BarFormat) -> String {
 /// Длительность в минутах — в читаемый вид. «143м» заставляет делить в уме,
 /// поэтому от часа и выше разбиваем на часы и минуты.
 func compactDuration(_ minutes: Int) -> String {
-    guard minutes >= 60 else { return "\(minutes)м" }
+    guard minutes >= 60 else { return String(localized: "\(minutes)m") }
     let hours = minutes / 60
     let rest = minutes % 60
-    return rest == 0 ? "\(hours)ч" : "\(hours)ч \(rest)м"
+    return rest == 0 ? String(localized: "\(hours)h") : String(localized: "\(hours)h \(rest)m")
 }
 
 /// Подпись над названием встречи в полноэкранном окне.
@@ -35,12 +35,12 @@ func compactDuration(_ minutes: Int) -> String {
 /// оставаться честным и через час: после начала встречи счётчик идёт вверх.
 func alertCountdownText(start: Date, now: Date) -> String {
     let seconds = Int(start.timeIntervalSince(now))
-    if seconds >= 60 { return "через \(spelledDuration(seconds / 60))" }
-    if seconds > 0 { return "через \(seconds) сек" }
+    if seconds >= 60 { return String(localized: "in \(spelledDuration(seconds / 60))") }
+    if seconds > 0 { return String(localized: "in \(seconds) sec") }
 
     let elapsed = -seconds
-    if elapsed < 60 { return "начинается сейчас" }
-    return "идёт \(spelledDuration(elapsed / 60))"
+    if elapsed < 60 { return String(localized: "starting now") }
+    return String(localized: "running for \(spelledDuration(elapsed / 60))")
 }
 
 /// Интервал встречи строкой: «14:30 – 15:00».
@@ -61,10 +61,10 @@ func meetingDuration(start: Date, end: Date) -> String {
 /// То же самое, но словами и с пробелами — в полноэкранном окне место есть,
 /// и «2 ч 36 мин» читается спокойнее, чем сжатое «2ч 36м» из меню-бара.
 func spelledDuration(_ minutes: Int) -> String {
-    guard minutes >= 60 else { return "\(minutes) мин" }
+    guard minutes >= 60 else { return String(localized: "\(minutes) min") }
     let hours = minutes / 60
     let rest = minutes % 60
-    return rest == 0 ? "\(hours) ч" : "\(hours) ч \(rest) мин"
+    return rest == 0 ? String(localized: "\(hours) h") : String(localized: "\(hours) h \(rest) min")
 }
 
 private func truncate(_ title: String) -> String {

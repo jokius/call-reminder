@@ -15,16 +15,16 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Section("Напоминание") {
-                Picker("Показывать за", selection: $settings.leadMinutes) {
+            Section("Reminder") {
+                Picker("Notify before", selection: $settings.leadMinutes) {
                     ForEach(leadOptions, id: \.self) { minutes in
-                        Text("\(minutes) мин").tag(minutes)
+                        Text("\(minutes) min").tag(minutes)
                     }
                 }
             }
 
-            Section("Меню-бар") {
-                Picker("Показывать", selection: $settings.barFormat) {
+            Section("Menu bar") {
+                Picker("Show", selection: $settings.barFormat) {
                     ForEach(BarFormat.allCases, id: \.self) { format in
                         Text(format.label).tag(format)
                     }
@@ -32,9 +32,9 @@ struct SettingsView: View {
                 .pickerStyle(.radioGroup)
             }
 
-            Section("Календари") {
+            Section("Calendars") {
                 if calendars.isEmpty {
-                    Text("Нет доступных календарей").foregroundStyle(.secondary)
+                    Text("No calendars available").foregroundStyle(.secondary)
                 } else {
                     ForEach(calendars) { calendar in
                         Toggle(isOn: binding(for: calendar.id)) {
@@ -42,14 +42,14 @@ struct SettingsView: View {
                             Text("\(calendar.title)  ·  \(calendar.account)")
                         }
                     }
-                    Text("Встречи берутся только из отмеченных календарей.")
+                    Text("Only checked calendars are used.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
             }
 
             Section {
-                Toggle("Запускать при входе", isOn: $launchAtLogin)
+                Toggle("Launch at login", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, enabled in
                         do {
                             try LaunchAtLogin.setEnabled(enabled)
@@ -63,7 +63,7 @@ struct SettingsView: View {
                     Text(launchError).font(.caption).foregroundStyle(.red)
                 }
                 if LaunchAtLogin.requiresApproval {
-                    Button("Разрешить в Системных настройках") { LaunchAtLogin.openSettings() }
+                    Button("Allow in System Settings") { LaunchAtLogin.openSettings() }
                 }
             }
         }

@@ -1,75 +1,103 @@
 # Call Reminder
 
-Приложение в строке меню macOS: показывает ближайшую встречу из Календаря и за
-заданное время до созвона разворачивает на весь экран окно с кнопками
-«Подключиться» и «Пропустить».
+**English** · [Русский](README.ru.md)
 
-Делалось как замена той части [In Your Face](https://github.com/mikker/InYourFace),
-которая нужна на каждый день. Работает без сети и без учётных записей: события
-берутся из системного Календаря, он же и синхронизирует Google, iCloud и Exchange.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![Platform: macOS](https://img.shields.io/badge/Platform-macOS-lightgrey.svg)
 
-## Что умеет
+A macOS menu bar app: it shows the next meeting from Calendar and, a chosen
+number of minutes before the call, takes over the whole screen with a window
+offering "Join" and "Skip".
 
-- Ближайшая встреча в меню-баре: **время и название**, **только название** или
-  **только время** — на выбор. Когда встреч нет, остаётся одна иконка.
-- Полноэкранное напоминание поверх всего, включая приложения в полноэкранном
-  режиме. Счётчик живой: после начала встречи считает вверх.
-- «Подключиться» открывает Zoom сразу в клиенте через `zoomus://`, остальные
-  сервисы — ссылкой. Встречи без ссылки показываются тоже, с одной кнопкой
-  «Закрыть».
-- Выбор календарей, за сколько минут предупреждать, автозапуск при входе.
+Same idea as [In Your Face](https://inyourface.app) — but only the part you need
+every day. Works without a network and without accounts: events come from the
+system Calendar, which is also what syncs Google, iCloud and Exchange.
 
-## Сборка
+## Features
 
-Нужны Xcode 26+ и [xcodegen](https://github.com/yonaskolb/XcodeGen)
-(`brew install xcodegen`). Опционально
-[swiftlint](https://github.com/realm/SwiftLint) — без него сборка не падает,
-только предупреждает.
+- The next meeting in the menu bar: **time and title**, **title only** or
+  **time only** — your pick. When there are no meetings, only the icon is left.
+- A full-screen reminder on top of everything, including apps in full-screen
+  mode. The counter is live: once the meeting starts, it counts up.
+- "Join" opens Zoom straight in the client via `zoomus://`, other services by
+  link. Meetings without a link are shown too, with a single "Dismiss" button.
+- Choice of calendars, how many minutes ahead to warn, launch at login.
+
+## Installation
+
+Two ways, the same app:
+
+- **Build it yourself** — free, instructions below. Xcode required.
+- **Buy it in the Mac App Store** — *coming*: a built and signed version for
+  those who would rather not fiddle with Xcode. The link will appear here once
+  it ships.
+
+## Building
+
+You need Xcode 26+ and [xcodegen](https://github.com/yonaskolb/XcodeGen)
+(`brew install xcodegen`). Optionally
+[swiftlint](https://github.com/realm/SwiftLint) — without it the build does not
+fail, it only warns.
 
 ```sh
-make            # собрать
-make test       # прогнать тесты
-make check      # формат, линт и тесты
-make install    # собрать релиз и поставить в /Applications
+make            # build
+make test       # run the tests
+make check      # format, lint and tests
+make install    # build a release and put it into /Applications
 ```
 
-`.xcodeproj` в репозитории нет: он генерируется из `project.yml` при каждой
-сборке.
+There is no `.xcodeproj` in the repository: it is generated from `project.yml`
+on every build.
 
-### Подпись
+### Code signing
 
-По умолчанию сборка идёт с ad-hoc подписью — работает, но macOS будет заново
-спрашивать доступ к Календарю после каждой пересборки: у ad-hoc меняется cdhash,
-и выданное разрешение перестаёт совпадать.
+By default the build uses an ad-hoc signature — it works, but macOS will ask for
+Calendar access again after every rebuild: an ad-hoc signature gets a new cdhash,
+so the permission you granted no longer matches.
 
-Чтобы разрешение держалось, укажите свою identity в файле `signing.local`
-(он не отслеживается гитом):
+To make the permission stick, put your own identity into `signing.local`
+(it is not tracked by git):
 
 ```make
-CODE_SIGN_IDENTITY = <SHA-1 из security find-identity -v -p codesigning>
-DEVELOPMENT_TEAM = <OU того же сертификата>
+CODE_SIGN_IDENTITY = <SHA-1 from security find-identity -v -p codesigning>
+DEVELOPMENT_TEAM = <OU of the same certificate>
 ```
 
-Team ID берётся из поля `OU` сертификата, а не из скобок в его названии —
-это разные значения.
+The Team ID comes from the certificate's `OU` field, not from the parentheses in
+its name — those are different values.
 
-## Устройство
+## How it works
 
-| Файл | За что отвечает |
+| File | What it is responsible for |
 |---|---|
-| `CalendarService` | EventKit: доступ, чтение событий до конца дня, отбор |
-| `MeetingLink` | Где в событии лежит ссылка на созвон и как её открыть |
-| `ReminderEngine` | Когда показывать окно; тикает раз в секунду по реальным часам |
-| `AlertPresenter` | Окно поверх всего, включая чужой полноэкранный режим |
-| `MenuBarLabel` | Строки для меню-бара и окна |
+| `CalendarService` | EventKit: access, reading events until the end of the day, filtering |
+| `MeetingLink` | Where the call link sits inside an event and how to open it |
+| `ReminderEngine` | When to show the window; ticks once a second by the real clock |
+| `AlertPresenter` | The window on top of everything, including someone else's full-screen mode |
+| `MenuBarLabel` | Strings for the menu bar and the window |
 
-Логика, где ошибка не видна глазами, вынесена в чистые функции и покрыта
-тестами; обёртки вокруг системных API проверяются запуском.
+Logic where a mistake is not visible to the eye lives in pure functions and is
+covered by tests; the wrappers around system APIs are checked by running the app.
 
-## Чего не делает
+## What it does not do
 
-- Не ходит в сеть и никуда не отправляет данные календаря.
-- Не собирает deep link для Microsoft Teams: их ссылки резолвит сервер, и
-  локально собранный `msteams://` открывает страницу справки вместо встречи.
-  Открывается https, который сам перекидывает в приложение.
-- Не догоняет уже начавшиеся встречи и не трогает события на весь день.
+- Does not go to the network and does not send calendar data anywhere.
+- Does not assemble a deep link for Microsoft Teams: their links are resolved by
+  the server, and a locally built `msteams://` opens a help page instead of the
+  meeting. The https link is opened instead, and it hands you over to the app
+  itself.
+- Does not chase meetings that have already started and does not touch all-day
+  events.
+
+## License
+
+[MIT](LICENSE). Take it, fork it, patch it, use it at work — no questions asked.
+
+The Mac App Store build costs money, and that is not a contradiction: the money
+there is for a finished app and its updates, not for access to the code. If
+building it yourself is easier for you — build it, that is exactly what the
+license allows.
+
+Zoom, Google Meet, Microsoft Teams, Webex, Whereby, Jitsi, Discord, Slack,
+Яндекс Телемост and Контур.Толк are trademarks of their respective owners. The
+app only recognizes them in links and is not affiliated with them.

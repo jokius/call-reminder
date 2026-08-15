@@ -134,7 +134,7 @@ enum MeetingLink {
     /// Для незнакомого хоста возвращаем сам хост: это честнее, чем безликое
     /// «Созвон», и сразу видно, куда именно поведёт кнопка.
     static func serviceName(for url: URL) -> String {
-        guard let host = url.host?.lowercased() else { return "Созвон" }
+        guard let host = url.host?.lowercased() else { return String(localized: "Call") }
         let known: [(suffix: String, name: String)] = [
             ("meet.google.com", "Google Meet"),
             ("teams.microsoft.com", "Microsoft Teams"),

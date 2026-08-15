@@ -6,6 +6,9 @@ options:
     macOS: "26.0"
   createIntermediateGroups: true
   groupSortPosition: top
+  # База английская, русский — перевод в Localizable.xcstrings. knownRegions
+  # задавать не нужно: xcodegen выводит их из содержимого каталога — проверено.
+  developmentLanguage: en
 
 settings:
   base:
@@ -44,9 +47,10 @@ targets:
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         LSMinimumSystemVersion: "$(MACOSX_DEPLOYMENT_TARGET)"
         LSUIElement: true
+        # Английский — база; русский перевод лежит в Sources/InfoPlist.xcstrings.
         NSCalendarsFullAccessUsageDescription: >-
-          callReminder читает календарь, чтобы показывать ближайшую встречу
-          в меню-баре и предупреждать до её начала.
+          Call Reminder reads your calendar to show the next meeting in the
+          menu bar and warn you before it starts.
     preBuildScripts:
       - name: SwiftLint
         basedOnDependencyAnalysis: false
@@ -84,6 +88,13 @@ schemes:
       config: Debug
     test:
       config: Debug
+      # Тесты прибиты к русскому, иначе сьют читал бы системный язык машины и
+      # ассерты вроде «1 ч 30 мин» падали бы на английской macOS. Заодно это
+      # гейт полноты перевода: пропал ключ в каталоге — вернётся английский
+      # и тест упадёт. Форс проверен эмпирически: locale: у String(localized:)
+      # переключает только форматирование чисел, но НЕ язык перевода.
+      commandLineArguments:
+        "-AppleLanguages (ru)": true
       targets:
         - callReminderTests
     archive:

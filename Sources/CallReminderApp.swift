@@ -51,7 +51,7 @@ final class AppModel {
 
     var barText: String {
         accessDenied
-            ? "нет доступа"
+            ? String(localized: "No access")
             : menuBarText(next: engine.next, now: engine.now, format: settings.barFormat)
     }
 
@@ -136,11 +136,11 @@ struct MenuContent: View {
 
     var body: some View {
         if model.accessDenied {
-            Button("Нет доступа к Календарю — открыть настройки") {
+            Button("No Calendar access — open Settings") {
                 model.openSystemCalendarSettings()
             }
         } else if model.upcoming.isEmpty {
-            Text("Встреч на сегодня нет")
+            Text("No meetings today")
         } else {
             ForEach(model.upcoming) { meeting in
                 if let link = meeting.link {
@@ -157,7 +157,7 @@ struct MenuContent: View {
 
         Divider()
 
-        Button("Настройки…") {
+        Button("Settings…") {
             openSettings()
             // Окно настроек открывается, но не становится key: LSUIElement-приложение
             // само вперёд не выходит.
@@ -166,7 +166,7 @@ struct MenuContent: View {
         }
         .keyboardShortcut(",")
 
-        Button("Выход") { NSApplication.shared.terminate(nil) }
+        Button("Quit") { NSApplication.shared.terminate(nil) }
             .keyboardShortcut("q")
     }
 

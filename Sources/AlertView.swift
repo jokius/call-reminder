@@ -145,7 +145,7 @@ struct AlertView: View {
         [
             meetingTimeRange(start: meeting.start, end: meeting.end),
             meetingDuration(start: meeting.start, end: meeting.end),
-            meeting.link.map(MeetingLink.serviceName(for:)) ?? "Ссылки на созвон в событии нет",
+            meeting.link.map(MeetingLink.serviceName(for:)) ?? String(localized: "No meeting link"),
         ]
     }
 
@@ -238,7 +238,7 @@ struct AlertView: View {
             if meeting.link == nil {
                 Button(action: onSkip) {
                     HStack(spacing: 14) {
-                        Text("Закрыть")
+                        Text("Dismiss")
                         KeyHint(symbol: "esc")
                     }
                 }
@@ -246,7 +246,7 @@ struct AlertView: View {
             } else {
                 Button(action: onJoin) {
                     HStack(spacing: 14) {
-                        Text("Подключиться")
+                        Text("Join")
                         KeyHint(symbol: "⏎", onAmber: true)
                     }
                 }
@@ -255,7 +255,7 @@ struct AlertView: View {
 
                 Button(action: onSkip) {
                     HStack(spacing: 14) {
-                        Text("Пропустить")
+                        Text("Skip")
                         KeyHint(symbol: "esc")
                     }
                 }

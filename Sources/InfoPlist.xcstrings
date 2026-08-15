@@ -1,0 +1,17 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSCalendarsFullAccessUsageDescription" : {
+      "comment" : "Системный запрос доступа к Календарю. Видит каждый на первом запуске",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call Reminder читает календарь, чтобы показывать ближайшую встречу в меню-баре и предупреждать до её начала."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
