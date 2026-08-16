@@ -3,7 +3,7 @@ name: callReminder
 options:
   bundleIdPrefix: com.konayre
   deploymentTarget:
-    macOS: "26.0"
+    macOS: "14.0"
   createIntermediateGroups: true
   groupSortPosition: top
   # База английская, русский — перевод в Localizable.xcstrings. knownRegions
@@ -35,7 +35,10 @@ targets:
         # Модуль остаётся callReminder: иначе @testable import поедет
         # вслед за отображаемым именем и станет Call_Reminder.
         PRODUCT_MODULE_NAME: callReminder
-        ENABLE_APP_SANDBOX: NO
+        # Sandbox обязателен для Mac App Store (гайдлайн 2.4.5(i)). Права —
+        # в Sources/callReminder.entitlements, там же объяснено, каких нет и почему.
+        ENABLE_APP_SANDBOX: YES
+        CODE_SIGN_ENTITLEMENTS: Sources/callReminder.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     info:
       path: Sources/Info.plist
