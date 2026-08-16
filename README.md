@@ -13,6 +13,8 @@ Same idea as [In Your Face](https://inyourface.app) — but only the part you ne
 every day. Works without a network and without accounts: events come from the
 system Calendar, which is also what syncs Google, iCloud and Exchange.
 
+![The reminder window](docs/alert-en.png)
+
 ## Features
 
 - The next meeting in the menu bar: **time and title**, **title only** or
