@@ -7,6 +7,9 @@ struct SettingsView: View {
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
     @State private var launchError: String?
 
+    private static let privacyPolicy = URL(
+        string: "https://github.com/jokius/call-reminder/blob/main/PRIVACY.md")
+
     /// Уже сохранённое значение добавляется в список, даже если оно нестандартное:
     /// иначе Picker не нашёл бы совпадения и показал пустую строку.
     private var leadOptions: [Int] {
@@ -64,6 +67,11 @@ struct SettingsView: View {
                 }
                 if LaunchAtLogin.requiresApproval {
                     Button("Allow in System Settings") { LaunchAtLogin.openSettings() }
+                }
+                // Apple требует политику приватности не только в метаданных стора,
+                // но и внутри приложения, «easily accessible» (гайдлайн 5.1.1(i)).
+                if let policy = Self.privacyPolicy {
+                    Link("Privacy Policy", destination: policy)
                 }
             }
         }

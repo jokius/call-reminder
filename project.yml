@@ -50,6 +50,9 @@ targets:
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         LSMinimumSystemVersion: "$(MACOSX_DEPLOYMENT_TARGET)"
         LSUIElement: true
+        # Шифрования нет вовсе, поэтому App Store Connect не будет спрашивать
+        # про экспортный контроль при каждой загрузке сборки.
+        ITSAppUsesNonExemptEncryption: false
         # Английский — база; русский перевод лежит в Sources/InfoPlist.xcstrings.
         NSCalendarsFullAccessUsageDescription: >-
           Call Reminder reads your calendar to show the next meeting in the

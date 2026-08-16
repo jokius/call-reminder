@@ -15,7 +15,7 @@ struct LocalizationTests {
         arguments: [
             "Join", "Skip", "Dismiss", "No meeting link",
             "No access", "No Calendar access — open Settings", "No meetings today",
-            "Settings…", "Quit",
+            "Settings…", "Quit", "Privacy Policy",
             "Reminder", "Notify before", "Menu bar", "Show", "Calendars",
             "No calendars available", "Only checked calendars are used.",
             "Launch at login", "Allow in System Settings",

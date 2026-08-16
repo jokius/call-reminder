@@ -185,6 +185,14 @@
         }
       }
     },
+    "Privacy Policy" : {
+      "comment" : "Ссылка в настройках. Apple требует политику и в метаданных, и внутри приложения",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Политика конфиденциальности" }
+        }
+      }
+    },
     "Quit" : {
       "comment" : "Пункт меню выхода",
       "localizations" : {

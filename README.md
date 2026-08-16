@@ -89,6 +89,9 @@ covered by tests; the wrappers around system APIs are checked by running the app
 - Does not chase meetings that have already started and does not touch all-day
   events.
 
+There is no network entitlement in the app at all, so sending your data anywhere
+is not something it is technically capable of. Details: [Privacy Policy](PRIVACY.md).
+
 ## License
 
 [MIT](LICENSE). Take it, fork it, patch it, use it at work — no questions asked.
