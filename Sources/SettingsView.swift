@@ -6,6 +6,8 @@ struct SettingsView: View {
 
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
     @State private var launchError: String?
+    /// Язык на момент открытия окна: пока выбор совпадает с ним, перезапускать нечего.
+    @State private var initialLanguage: AppLanguage?
 
     private static let privacyPolicy = URL(
         string: "https://github.com/jokius/call-reminder/blob/main/PRIVACY.md")
@@ -22,6 +24,25 @@ struct SettingsView: View {
                 Picker("Notify before", selection: $settings.leadMinutes) {
                     ForEach(leadOptions, id: \.self) { minutes in
                         Text("\(minutes) min").tag(minutes)
+                    }
+                }
+            }
+
+            Section("Language") {
+                Picker("Language", selection: $settings.language) {
+                    ForEach(AppLanguage.allCases, id: \.self) { language in
+                        Text(language.label).tag(language)
+                    }
+                }
+                // Язык подхватывается бандлом только на старте, поэтому просто
+                // менять пикер недостаточно — нужен новый процесс.
+                if settings.language != initialLanguage {
+                    HStack {
+                        Text("Restart to apply the new language")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Button("Restart") { AppRestart.now() }
                     }
                 }
             }
@@ -78,6 +99,7 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .frame(width: 460)
         .fixedSize(horizontal: false, vertical: true)
+        .onAppear { initialLanguage = initialLanguage ?? settings.language }
     }
 
     private func binding(for id: String) -> Binding<Bool> {

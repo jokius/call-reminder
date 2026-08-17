@@ -19,6 +19,7 @@ struct LocalizationTests {
             "Reminder", "Notify before", "Menu bar", "Show", "Calendars",
             "No calendars available", "Only checked calendars are used.",
             "Launch at login", "Allow in System Settings",
+            "Language", "System", "Restart", "Restart to apply the new language",
             "Time and title", "Title only", "Time only",
             "Untitled", "Call",
         ])

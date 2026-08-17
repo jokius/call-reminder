@@ -105,6 +105,14 @@
         }
       }
     },
+    "Language" : {
+      "comment" : "Заголовок секции и подпись пикера языка интерфейса",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Язык" }
+        }
+      }
+    },
     "Launch at login" : {
       "comment" : "Переключатель автозапуска",
       "localizations" : {
@@ -209,6 +217,22 @@
         }
       }
     },
+    "Restart" : {
+      "comment" : "Кнопка перезапуска приложения после смены языка",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Перезапустить" }
+        }
+      }
+    },
+    "Restart to apply the new language" : {
+      "comment" : "Подсказка рядом с кнопкой перезапуска",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Язык сменится после перезапуска" }
+        }
+      }
+    },
     "running for %@" : {
       "comment" : "Счётчик после начала встречи: «идёт 5 мин»",
       "localizations" : {
@@ -230,6 +254,14 @@
       "localizations" : {
         "ru" : {
           "stringUnit" : { "state" : "translated", "value" : "Показывать" }
+        }
+      }
+    },
+    "System" : {
+      "comment" : "Вариант в пикере языка: следовать за настройками macOS",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "Системный" }
         }
       }
     },
