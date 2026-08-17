@@ -12,3 +12,7 @@ xcuserdata/
 
 # Личные настройки подписи
 signing.local
+
+# Скриншоты для App Store: 24 МБ, нужны разово при заливке.
+# Лёгкие docs/alert-*.png остаются в гите — на них ссылается README.
+docs/store/
