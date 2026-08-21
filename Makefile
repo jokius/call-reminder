@@ -10,6 +10,7 @@ SHELL     := /bin/bash
 -include signing.local
 SIGN_ARGS  = $(if $(CODE_SIGN_IDENTITY),CODE_SIGN_IDENTITY="$(CODE_SIGN_IDENTITY)" DEVELOPMENT_TEAM="$(DEVELOPMENT_TEAM)" $(if $(CODE_SIGN_STYLE),CODE_SIGN_STYLE="$(CODE_SIGN_STYLE)",),)
 ARCHIVE_PATH ?= build/CallReminder.xcarchive
+EXPORT_PATH  ?= build/export
 
 PROJECT   := callReminder.xcodeproj
 SCHEME    := callReminder
@@ -19,7 +20,7 @@ DEST      := platform=macOS,arch=arm64
 SOURCES   := Sources Tests
 
 .DEFAULT_GOAL := build
-.PHONY: gen build release install uninstall test fmt fmt-check lint lint-fix check clean run archive
+.PHONY: gen build release install uninstall test fmt fmt-check lint lint-fix check clean run archive package
 
 # xcodegen отрабатывает за 25 мс, поэтому генерируем всегда, а не по timestamp:
 # любая файловая зависимость врёт при УДАЛЕНИИ файла (нет файла — нет времени),
@@ -42,12 +43,35 @@ ifndef DEVELOPMENT_TEAM
 	$(error signing.local без DEVELOPMENT_TEAM — архив для стора собрать нечем)
 endif
 	rm -rf "$(ARCHIVE_PATH)"
+	# -allowProvisioningUpdates обязателен: без него xcodebuild не имеет права
+	# заводить профиль и Distribution-сертификат и молча подписывает ad-hoc,
+	# а такой архив стор отвергает. Проверено — именно на этом всё и стояло.
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration Release \
 	  -destination 'generic/platform=macOS' -archivePath "$(ARCHIVE_PATH)" \
-	  CODE_SIGN_STYLE=Automatic DEVELOPMENT_TEAM="$(DEVELOPMENT_TEAM)" \
-	  CODE_SIGN_IDENTITY="" archive
+	  -allowProvisioningUpdates \
+	  CODE_SIGN_STYLE=Automatic DEVELOPMENT_TEAM="$(DEVELOPMENT_TEAM)" archive
 	@echo "архив: $(ARCHIVE_PATH)"
-	@echo "дальше: Xcode → Window → Organizer → Distribute App → App Store Connect"
+
+# .pkg для загрузки в App Store Connect. Приложение в архиве подписано
+# Development — это норма: Distribution накладывается именно здесь, на экспорте,
+# и пакет подписывается отдельным «3rd Party Mac Developer Installer».
+package: archive
+	rm -rf "$(EXPORT_PATH)"
+	@mkdir -p "$(EXPORT_PATH)"
+	@printf '%s\n' '<?xml version="1.0" encoding="UTF-8"?>' \
+	  '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' \
+	  '<plist version="1.0"><dict>' \
+	  '<key>method</key><string>app-store</string>' \
+	  '<key>teamID</key><string>$(DEVELOPMENT_TEAM)</string>' \
+	  '<key>destination</key><string>export</string>' \
+	  '</dict></plist>' > "$(EXPORT_PATH)/ExportOptions.plist"
+	xcodebuild -exportArchive -archivePath "$(ARCHIVE_PATH)" \
+	  -exportPath "$(EXPORT_PATH)" \
+	  -exportOptionsPlist "$(EXPORT_PATH)/ExportOptions.plist" \
+	  -allowProvisioningUpdates
+	@echo "пакет: $(EXPORT_PATH)/$(APP_NAME).pkg"
+	@pkgutil --check-signature "$(EXPORT_PATH)/$(APP_NAME).pkg" | head -3
+	@echo "дальше: Xcode → Organizer → Distribute, либо Transporter.app"
 
 # Ставим в /Applications: оттуда работает автозапуск через SMAppService,
 # и приложение переживает очистку DerivedData.
