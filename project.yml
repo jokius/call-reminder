@@ -20,7 +20,14 @@ settings:
     # Своя identity задаётся в signing.local (см. README): ad-hoc меняет cdhash
     # при каждой сборке, из-за чего macOS заново спрашивает доступ к Календарю.
     CODE_SIGN_STYLE: Manual
-    CODE_SIGN_IDENTITY: "-"
+  configs:
+    # Ad-hoc живёт только в Debug. В Release его нет намеренно: архив для
+    # App Store подписывается автоматически (make archive), а прибитая здесь
+    # «-» перебивала бы автоподпись и архив уезжал бы ad-hoc — стор такой
+    # отвергает. Обычный `make release` без signing.local всё равно соберётся:
+    # при Manual без identity Xcode подписывает локально.
+    Debug:
+      CODE_SIGN_IDENTITY: "-"
 
 targets:
   callReminder:
@@ -50,6 +57,8 @@ targets:
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         LSMinimumSystemVersion: "$(MACOSX_DEPLOYMENT_TARGET)"
         LSUIElement: true
+        # Без категории App Store ругается на этапе валидации архива.
+        LSApplicationCategoryType: public.app-category.productivity
         # Шифрования нет вовсе, поэтому App Store Connect не будет спрашивать
         # про экспортный контроль при каждой загрузке сборки.
         ITSAppUsesNonExemptEncryption: false
