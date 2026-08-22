@@ -2,6 +2,7 @@
 
 **English** · [Русский](README.ru.md)
 
+[![CI](https://github.com/jokius/call-reminder/actions/workflows/ci.yml/badge.svg)](https://github.com/jokius/call-reminder/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Platform: macOS](https://img.shields.io/badge/Platform-macOS-lightgrey.svg)
 
@@ -57,13 +58,17 @@ By default the build uses an ad-hoc signature — it works, but macOS will ask f
 Calendar access again after every rebuild: an ad-hoc signature gets a new cdhash,
 so the permission you granted no longer matches.
 
-To make the permission stick, put your own identity into `signing.local`
+To make the permission stick, put your team into `signing.local`
 (it is not tracked by git):
 
 ```make
-CODE_SIGN_IDENTITY = <SHA-1 from security find-identity -v -p codesigning>
-DEVELOPMENT_TEAM = <OU of the same certificate>
+CODE_SIGN_IDENTITY = Apple Development
+CODE_SIGN_STYLE = Automatic
+DEVELOPMENT_TEAM = <the certificate's OU field>
 ```
+
+A generic name rather than a certificate hash on purpose: Xcode then picks the
+current certificate itself, so an expiring or replaced one breaks nothing.
 
 The Team ID comes from the certificate's `OU` field, not from the parentheses in
 its name — those are different values.

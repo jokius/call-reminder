@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  # Новый пуш в ту же ветку отменяет предыдущий прогон: на macOS-раннерах
+  # время дороже, чем на linux, и держать очередь из устаревших сборок незачем.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    # Именно macos-26: проекту нужен Xcode 26 (isolated deinit — Swift 6.2+),
+    # на macos-15 сборка не пройдёт. На этом образе 26.6 стоит по умолчанию.
+    runs-on: macos-26
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Показать окружение
+        run: |
+          xcodebuild -version
+          swift --version
+
+      # xcodegen обязателен: .xcodeproj в репозитории нет, он генерируется.
+      # swiftlint нужен для `make lint`; на образе нет ни того, ни другого.
+      - name: Поставить xcodegen и swiftlint
+        run: brew install xcodegen swiftlint
+
+      - name: Формат
+        run: make fmt-check
+
+      - name: Линт
+        run: make lint
+
+      # Тесты гоняются с -AppleLanguages (ru) из схемы, поэтому проверяют заодно
+      # полноту перевода: пропал ключ в каталоге — вернётся английский и тест упадёт.
+      - name: Тесты
+        run: make test
+
+      # Release собирается отдельно: у него нет ad-hoc identity из Debug, и
+      # сломать его правкой подписи легко, а заметить — только здесь.
+      - name: Сборка Release
+        run: make release

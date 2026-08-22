@@ -2,6 +2,7 @@
 
 [English](README.md) · **Русский**
 
+[![CI](https://github.com/jokius/call-reminder/actions/workflows/ci.yml/badge.svg)](https://github.com/jokius/call-reminder/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Platform: macOS](https://img.shields.io/badge/Platform-macOS-lightgrey.svg)
 
@@ -57,13 +58,17 @@ make install    # собрать релиз и поставить в /Applicatio
 спрашивать доступ к Календарю после каждой пересборки: у ad-hoc меняется cdhash,
 и выданное разрешение перестаёт совпадать.
 
-Чтобы разрешение держалось, укажите свою identity в файле `signing.local`
+Чтобы разрешение держалось, укажите свою команду в файле `signing.local`
 (он не отслеживается гитом):
 
 ```make
-CODE_SIGN_IDENTITY = <SHA-1 из security find-identity -v -p codesigning>
-DEVELOPMENT_TEAM = <OU того же сертификата>
+CODE_SIGN_IDENTITY = Apple Development
+CODE_SIGN_STYLE = Automatic
+DEVELOPMENT_TEAM = <поле OU сертификата>
 ```
+
+Родовое имя вместо хеша сертификата — намеренно: Xcode сам возьмёт актуальный,
+поэтому истечение или замена сертификата ничего не ломают.
 
 Team ID берётся из поля `OU` сертификата, а не из скобок в его названии —
 это разные значения.
